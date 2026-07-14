@@ -1,0 +1,14 @@
+# Newman / Node
+node_modules/
+npm-debug.log*
+
+# Generated test reports (CI uploads these as artifacts instead)
+reports/
+*.html
+
+# Postman local working files (keep the versioned collection/environment only)
+*.postman_collection_backup.json
+
+# OS / editor noise
+.DS_Store
+.vscode/

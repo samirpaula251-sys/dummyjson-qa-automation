@@ -1,0 +1,50 @@
+name: DummyJSON API Regression Suite
+
+# Runs the Postman collection automatically:
+# - on every push to main
+# - on every pull request
+# - once a day on a schedule, to catch drift on the third-party API itself
+# - manually, on demand, from the GitHub Actions tab
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "0 6 * * *"   # every day at 06:00 UTC
+  workflow_dispatch: {}
+
+jobs:
+  run-collection:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Newman + HTML reporter
+        run: npm install -g newman newman-reporter-htmlextra
+
+      - name: Run Postman collection
+        run: |
+          newman run collection/DummyJSON_API_QA_Collection.postman_collection.json \
+            -e collection/DummyJSON_QA.postman_environment.json \
+            --reporters cli,htmlextra \
+            --reporter-htmlextra-export reports/report.html \
+            --reporter-htmlextra-darkTheme \
+            --reporter-htmlextra-title "DummyJSON API - QA Regression Report"
+
+      # The step above fails the job automatically if any test fails
+      # (Newman exits non-zero), so a red run blocks the pipeline.
+
+      - name: Upload HTML report as build artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: newman-html-report
+          path: reports/report.html
+          retention-days: 30
