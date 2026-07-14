@@ -156,4 +156,4 @@ Why this matters day-to-day:
 
 If you edit the collection inside the Postman app instead of by hand, export
 it (`... → Export`) and overwrite the file in `collection/` before each
-commit, so the repo and the app never drift apart test.
+commit, so the repo and the app never drift apart.
